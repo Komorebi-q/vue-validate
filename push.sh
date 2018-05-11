@@ -2,7 +2,7 @@ set -e
 
 
 git add .
-git commit -m "$1"
+git commit -m "add some test func"
 
 git pull origin master
 git add .
