@@ -1,28 +1,73 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <input
+      type="text" 
+      v-model.trim="val"
+      tag = "登录密码"
+      v-va:Password
+    >
+    <hr>
+    <input 
+      type="text"
+      v-model.trim="val2"
+      tag="testPassword"
+      v-va:Password2
+    >
+    <hr>
+    <input
+      type="text" 
+      v-model.trim="val1"
+      tag = "确认密码"
+      v-va:checkPassword.Password.Test = "[{'equal': 'Password'}, {'unique': 'Password2'}]"
+    >
+    <button @click="check"> CHECK </button>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { addClass } from './utils';
 
 export default {
   name: 'app',
+  data () {
+    return {
+      va: {},
+      regExps: {
+          'Test111': /a/
+      },
+      val: 'dasdad',
+      val1: 'aaa',
+      val2: ''
+    }
+  },
   components: {
-    HelloWorld
+  },
+  methods: {
+    check () {
+      
+    }
+  },
+  mounted () {
+    console.log(this.$va);
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss" scoped>
+  #app {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    >input {
+      width: 400px;
+      height: 30px;
+      border-radius: 10px;
+      &.error {
+        border: red 2px solid;
+      }
+    }
+  }
 </style>
+
