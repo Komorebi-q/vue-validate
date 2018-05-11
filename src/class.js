@@ -24,7 +24,7 @@ export class Form {
 
 export class Result {
   constructor (type, val, isPass, msg) {
-    this.type = type.split('-')[0];
+    this.type = type;
     this.val = val;
     this.isPass = isPass;
     this.msg = msg;

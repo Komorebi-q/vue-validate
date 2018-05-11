@@ -86,15 +86,98 @@ export const addClass = (dom, className = '') => {
   return result;
 }
 
-const validateTest = {
-  testEmpty () {},
-  testEqual () {},
-  testUnqiue () {},
-  testLength () {},
-  testMax () {},
-  testMin () {},
-  testRegExp () {}
+const errMsg = (type, tag, ruleValue) => {
+  const msg = {
+    noEmpty: `${tag}不能为空`,
+    regExp: `${tag}格式错误`,
+    // limit: `${tag}必须在${ruleValue[0]}与${ruleValue[1]}之间`,
+    equal:`两次${tag}不相同`,
+    length: `${tag}长度不服`,
+    unique: `${tag}不能相同`
+  };
+
+  return msg[type];
 }
+
+export const validateTest = {
+  noEmpty (field, type, val) {
+    const form = this.forms[field];
+
+    if (val === '') {
+      return new Result(type, val, false, errMsg(type, form.field));
+    } else {
+      return new Result(type, val, true, '');
+    }
+  },
+  equal (field, type, val) {
+    type = type.split('-')[0];
+    const form = this.forms[field];
+    const modifiers = form.modifiers;
+    let  equalValue;
+    modifiers.forEach(modifier => {
+      let key = Object.keys(modifier)[0];
+      if (key === type) {
+        equalValue = this.forms[modifier[key]].value;
+      }
+    });
+
+    if (equalValue === val) {
+      return new Result(type, val, true, '');
+    } else {
+      return new Result(type, val, false, errMsg(type, field, [val, equalValue]));
+    }
+  },
+  unique (field, type, val) {
+    type = type.split('-')[0];
+    const form = this.forms[field];
+    const modifiers = form.modifiers;
+    let  equalValue;
+    modifiers.forEach(modifier => {
+      let key = Object.keys(modifier)[0];
+      if (key === type) {
+        equalValue = this.forms[modifier[key]].value;
+      }
+    });
+
+    if (equalValue !== val) {
+      return new Result(type, val, true, '');
+    } else {
+      return new Result(type, val, false, errMsg(type, field, [val, equalValue]));
+    }
+  },
+  length (field, type, val) {
+    type = type.split('-')[0];
+    const form = this.forms[field];
+    const modifiers = form.modifiers;
+    let len;
+    modifiers.forEach(modifier => {
+      let key = Object.keys(modifier)[0];
+      console.log(modifier);
+      if (key === type) {
+        len = modifier[key];
+      }
+    });
+
+    if (len === val.length) {
+      return new Result(type, val, true, '');
+    } else {
+      return new Result(type, val, false, errMsg(type, field));
+    }
+  },
+  max () {},
+  min () {},
+  regExp () {}
+}
+
+const testData = [
+  'noEmpty',
+  'equal',
+  'unique',
+  'regExp',
+  'max',
+  'min',
+  'length'
+];
 
 export const validateFn = {
   // $va 对象的方法
@@ -130,33 +213,16 @@ export const validateFn = {
     return result;
   },
 
- /*  setValue (field, val = '') {
-    const forms = this.forms;
-
-    forms[field].value = val;
-    forms[field].el.value = val;
-  },
-
-  setValues (targets) {
-    const forms = this.forms;
-    const keys = Object.keys(targets);
-
-    keys.forEach(key => {
-      forms[key].value = targets[key];
-      forms[key].el.value = targets[key];
-    });
-  } */
-
   setResult (field) {
     // 获取result
   },
 
   validate (field, type) {
     // 进行单个验证
-    const form = this.forms[filed];
+    const form = this.forms[field];
 
     if (type !== void 0) {
-      return this.checkRule(field, form.rules[type]);
+      return this.checkRule(field, form.rules[type], form);
     } else {
       return this.checkForm(field);
     }   
@@ -165,17 +231,22 @@ export const validateFn = {
   checkForm (field) {
     const form = this.forms[field];
     const {rules} = form;
+    const result = [];
+
+    rules.forEach(rule => {
+      result.push(this.checkRule(field, rule.type.split('-')[0], form));
+    });
+    console.log(result);
   },
 
-  checkRule (field, rule) {
-    const checker = {
-      testEmpty: validateTest.testEmpty,
-      testLength: validateTest.testLength,
-      testMax: validateTest.testMax,
-      testMin: validateTest.testMin,
-      testUnqiue: validateTest.testUnqiue,
-      testRegExp: validateTest.testRegExp      
-   }
+  checkRule (field, rule, form) {
+    const checkers = {};
+
+    testData.forEach(item => {
+      checkers[item] = this.validateTest[item].bind(this);
+    });
+
+    return checkers[rule](field, rule, form.value)
   },
 
   checkAll () {},

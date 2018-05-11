@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Form, Result, Rule, DisplayResult } from './class';
 import config from './config';
-import { assert, mergeRule, validateFn } from './utils';
+import { assert, mergeRule, validateFn, validateTest } from './utils';
 
 const {
   refreshValue,
@@ -52,7 +52,8 @@ const Va = function (vm, field, opts) {
     checkRule,
     checkForm,
     addNoCheck,
-    addRules
+    addRules,
+    validateTest
   }
 
   if (vm.$va) {
@@ -71,7 +72,7 @@ function getFinalRules (field, modifiers, componentOpts, regExps) {
   
   const baseKeys = Object.keys(modifiers); 
   baseRules = baseKeys.map(key => {
-    return new Rule('Reg', regExps[key], '', key);
+    return new Rule('regExp', regExps[key], '', key);
   });
 
   componentRules = componentOpts.map(item => {
@@ -146,7 +147,7 @@ export default {
           function singleValidate () {
             va.refreshValue();
             if (!form.canEmpty && form.value === '') {
-              this.result[field] = {isPass: true};
+              va.result[field] = {isPass: true};
               return;
             }
             va.validate(field);

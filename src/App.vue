@@ -18,7 +18,7 @@
       type="text" 
       v-model.trim="val1"
       tag = "确认密码"
-      v-va:checkPassword.Password.Test = "[{'equal': 'Password'}, {'unique': 'Password2'}]"
+      v-va:checkPassword.Password.Test = "[{'equal': 'Password'}, {'unique': 'Password2'}, {'noEmpty': true}, {'length': 10}]"
     >
     <button @click="check"> CHECK </button>
   </div>
