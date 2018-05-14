@@ -85,6 +85,7 @@ export const addClass = (dom, className = '') => {
 
   return result;
 }
+//  test
 
 const errMsg = (type, tag, ruleValue) => {
   const msg = {
